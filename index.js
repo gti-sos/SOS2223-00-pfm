@@ -1,16 +1,18 @@
-function log(msg){
-    console.log(msg);
-}
+var express = require("express");
+var cool = require("cool-ascii-faces");
 
-var numbers = [1,2,3,4];
+var app = express();
+var port = process.env.PORT || 12345;
 
-var i = numbers
-            .filter((n)=>{
-                return n > 2;
-            }).map((n)=>{
-                return n + 1;
-            }).reduce((a,n)=>{
-                return n + a;
-            });
+app.get("/faces", (request,response) => {
+    response.send(cool());
+    console.log("New request");
+});
 
-log(i);
+app.listen(port,()=>{
+    console.log(`Server ready in port ${port}`);
+});
+
+
+
+
