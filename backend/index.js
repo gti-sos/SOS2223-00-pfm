@@ -1,3 +1,6 @@
+var Datastore = require('nedb');
+var db = new Datastore();
+ 
 const BASE_API_URL = "/api/v1";
 
 module.exports = (app) =>{
@@ -13,9 +16,24 @@ module.exports = (app) =>{
             }
         ];
 
+    db.insert(contacts);
+    console.log("Inserted 2 contacts on start.");
+
     app.get(BASE_API_URL+"/contacts", (request,response) => {
-        response.json(contacts);
         console.log("New GET to /contacts");
+        db.find({}, (err, contacts)=>{
+            if(err){
+                console.log(`Error geting /contacts: ${err}`);
+                response.sendStatus(500);
+            }else{
+                console.log(`Contacts returned ${contacts.length}`);
+                response.json(contacts.map((c)=>{
+                    delete c._id;
+                    return c;
+                }));  
+            }
+        });
+        
     });
 
     app.post(BASE_API_URL+"/contacts", (request,response) => {
