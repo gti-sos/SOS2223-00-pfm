@@ -43,9 +43,26 @@ module.exports = (app) =>{
         
         console.log("New POST to /contacts");
 
-        contacts.push(newContact);
+        db.insert(newContact);
 
         response.sendStatus(201);
+    });
+
+    app.delete(BASE_API_URL+"/contacts/:name", (request,response) => {
+        var name = request.params.name;
+
+        console.log(`New DELETE to /contacts/${name}`);
+        
+        db.remove({"name" : name},{},(err, numRemoved)=>{
+            if(err){
+                console.log(`Error deleting /contacts/${name}: ${err}`);
+                response.sendStatus(500);
+            }else{
+                console.log(`Contacts removed ${numRemoved}`);
+                response.sendStatus(200);
+               
+            }
+        });
     });
 
 
