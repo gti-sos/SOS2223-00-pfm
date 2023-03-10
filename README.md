@@ -1,2 +1,2 @@
-# Codigo de L06
-- API sencilla con GET / POST 
+# Codigo de L07
+- API con persistencia en NeDB y Pruebas 
