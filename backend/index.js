@@ -45,7 +45,7 @@ module.exports = (app) =>{
 
         db.insert(newContact);
 
-        response.sendStatus(201);
+        response.sendStatus(400);
     });
 
     app.delete(BASE_API_URL+"/contacts/:name", (request,response) => {
