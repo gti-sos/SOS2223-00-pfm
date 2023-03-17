@@ -1,10 +1,9 @@
 # .github/workflows/deploy.yml
 name: Deploy to Cloud Run
 on:
-  pull_requests:
-    types:
-      - closed
-
+  pull_request:
+    branches:
+      - main
 jobs:
   deploy:
     name: Deploy to Google Cloud Run
