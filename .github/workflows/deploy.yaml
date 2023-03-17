@@ -1,10 +1,9 @@
 # .github/workflows/deploy.yml
 name: Deploy to Cloud Run
 on:
-  push:
+  pull_request:
     branches:
       - main
-
 jobs:
   deploy:
     name: Deploy to Google Cloud Run
@@ -12,6 +11,12 @@ jobs:
     environment: production
     steps:
       - uses: actions/checkout@v2
+      
+      - run: npm install
+      
+      - run: npm start &
+
+      - run: npm test
       
       - id: 'auth'
         uses: 'google-github-actions/auth@v1'
