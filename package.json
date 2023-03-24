@@ -3,9 +3,10 @@
   "version": "0.0.0",
   "description": "hello",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "start": "node index",
-    "test-contacts" : "npx newman run ./tests/backend-contacts.json -e ./tests/env/localhost.json",
+    "test-contacts": "npx newman run ./tests/backend-contacts.json -e ./tests/env/localhost.json",
     "test": "npm run test-contacts"
   },
   "repository": {
@@ -21,6 +22,7 @@
   "dependencies": {
     "body-parser": "^1.20.2",
     "cool-ascii-faces": "^1.3.4",
+    "cors": "^2.8.5",
     "express": "^4.18.2",
     "nedb": "^1.8.0"
   }
