@@ -1,9 +1,9 @@
-var Datastore = require('nedb');
+import Datastore from 'nedb';
 var db = new Datastore();
  
 const BASE_API_URL = "/api/v1";
 
-module.exports = (app) =>{
+function loadBackend(app){
 
     var contacts = [
             {
@@ -69,3 +69,4 @@ module.exports = (app) =>{
 
 };
 
+export { loadBackend };
