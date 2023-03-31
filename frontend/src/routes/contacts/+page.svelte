@@ -3,7 +3,11 @@
     
         import { onMount } from 'svelte';
         import { dev } from '$app/environment';
+        import { Button, Table } from 'sveltestrap';
 
+        onMount(async () => {
+            getContacts();
+        });
         
         let API = '/api/v1/contacts';
         
@@ -12,6 +16,8 @@
             
 
         let contacts = [];
+        let newContactName = 'name';
+        let newContactPhone = 'phone';
     
         let result = "";
         let resultStatus = "";
@@ -31,30 +37,64 @@
             const status = await res.status;
             resultStatus = status;	
         }
-    
-    
-    
-    
-        onMount(async () => {
-            getContacts();
-        });
+      
+
+        async function createContact () {
+            resultStatus = result = "";
+            const res = await fetch(API, {
+                method: 'POST',
+                headers:{
+                    "Content-Type" : "application/json"
+                },
+                body:JSON.stringify({
+                    name: newContactName,
+                    phone: newContactPhone
+                })
+            });
+            const status = await res.status;
+            resultStatus = status;	           
+            if(status==201){
+                getContacts();
+            }
+
+        }
     
     </script>
     <h1> Contacts</h1>
     
-    <ul>
-        {#each contacts as contact}
-            <li>{contact.name}</li>
-        {/each}        
-    </ul>
+    <Table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Phone</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+           <tr>
+                <td><input bind:value={newContactName}></td>
+                <td><input bind:value={newContactPhone}></td>
+                <td><Button on:click={createContact}>Create</Button></td>
+            </tr>
     
+        {#each contacts as contact}
+          <tr>
+            <td>{contact.name}</td>
+            <td>{contact.phone}</td>
+            <td>&nbsp</td>
+          </tr>
+          {/each} 
+        </tbody>
+      </Table>
+
+      
     {#if resultStatus != ""}
         <p>
             Result:
         </p>
         <pre>
-    {resultStatus}
-    {result}
+{resultStatus}
+{result}
         </pre>
     {/if}
     
