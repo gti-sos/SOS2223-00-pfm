@@ -4,26 +4,27 @@
         import { onMount } from 'svelte';
         import { dev } from '$app/environment';
         import { Button, Table } from 'sveltestrap';
+        import { page } from '$app/stores';
 
         onMount(async () => {
-            getContacts();
+            getContact();
         });
         
-        let API = '/api/v1/contacts';
+        let name = $page.params.name;
+
+        let API = '/api/v1/contacts/'+name;
         
         if(dev)
             API = 'http://localhost:12345'+API
             
 
-        let contacts = [];
-        let newContactName = 'name';
-        let newContactPhone = 'phone';
-        let message = "";
-    
+        let updatedContactName = name;
+        let updatedContactPhone = 'phone';
+        
         let result = "";
         let resultStatus = "";
     
-        async function getContacts () {
+        async function getContact () {
             resultStatus = result = "";
             const res = await fetch(API, {
                 method: 'GET'
@@ -31,7 +32,8 @@
             try{
                 const data = await res.json();
                 result = JSON.stringify(data,null,2);
-                contacts = data;
+                updatedContactName = data.name;
+                updatedContactPhone = data.phone;            
             }catch(error){
                 console.log(`Error parsing result: ${error}`);
             }
@@ -40,42 +42,28 @@
         }
       
 
-        async function createContact () {
+        async function updateContact () {
             resultStatus = result = "";
             const res = await fetch(API, {
-                method: 'POST',
+                method: 'PUT',
                 headers:{
                     "Content-Type" : "application/json"
                 },
                 body:JSON.stringify({
-                    name: newContactName,
-                    phone: newContactPhone
+                    name: updatedContactName,
+                    phone: updatedContactPhone
                 })
             });
             const status = await res.status;
             resultStatus = status;	           
-            if(status==201){
-                getContacts();
-            }
-
-        }
-    
-        async function deleteContact (contactName) {
-            resultStatus = result = "";
-            const res = await fetch(API+"/"+contactName, {
-                method: 'DELETE'
-            });
-            const status = await res.status;
-            resultStatus = status;	           
             if(status==200){
-                getContacts();
+                getContact();
             }
-        }
-      
 
+        }
 
     </script>
-    <h1> Contacts</h1>
+    <h1> Contact Details</h1>
     
     <Table>
         <thead>
@@ -87,25 +75,14 @@
         </thead>
         <tbody>
            <tr>
-                <td><input bind:value={newContactName}></td>
-                <td><input bind:value={newContactPhone}></td>
-                <td><Button on:click={createContact}>Create</Button></td>
+                <td>{updatedContactName}</td>
+                <td><input bind:value={updatedContactPhone}></td>
+                <td><Button on:click={updateContact}>Update</Button></td>
             </tr>
-    
-        {#each contacts as contact}
-          <tr>
-            <td><a href="/contacts/{contact.name}">{contact.name}</a></td>
-            <td>{contact.phone}</td>
-            <td><Button on:click={deleteContact(contact.name)}>Delete</Button></td>
-          </tr>
-          {/each} 
-        </tbody>
+     </tbody>
       </Table>
 
-      {#if message != ""}
-      <h1 style="color:red">{message}</h1>
-      {/if}
-      
+
     {#if resultStatus != ""}
         <p>
             Result:
