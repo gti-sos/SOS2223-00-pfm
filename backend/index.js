@@ -110,7 +110,23 @@ function loadBackend(app){
         });
     });
 
+    app.get(BASE_API_URL+"/data", (request,response) => {
+        
+        console.log(`New GET to /data`);
+        
+        function getRandomInt(min,max){
+            return Math.floor(Math.random() *(max-min)+min);
+        }
+        function v(){return getRandomInt(1,100)};
 
+        var data = new Array();
+
+        for(var i=0; i<10;i++)
+            data.push(v());
+
+        response.json(data);
+
+    });
 
 };
 

@@ -9,8 +9,40 @@
 <script>
     // @ts-nocheck
     import {onMount} from 'svelte';
+    import { dev } from '$app/environment';
+        
+        
+    let API = '/api/v1/data';
 
-    async function loadChart(){
+    if(dev)
+        API = 'http://localhost:12345'+API
+      
+    let data = [];
+    let result = "";
+    let resultStatus = "";
+
+    async function getData() {
+        resultStatus = result = "";
+         
+        const res = await fetch(API, {
+            method: 'GET'
+        });
+ 
+        
+        try{
+            const dataReceived = await res.json();
+            result = JSON.stringify(dataReceived,null,2);
+            data = dataReceived;
+            loadChart(data);
+        }catch(error){
+            console.log(`Error parsing result: ${error}`);
+        }
+        const status = await res.status;
+        resultStatus = status;
+
+    }
+    
+    async function loadChart(graphData){
 
         Highcharts.chart('container', {
 
@@ -53,8 +85,7 @@
 
             series: [{
                 name: 'Installation & Developers',
-                data: [43934, 48656, 65165, 81827, 112143, 142383,
-                    171533, 165174, 155157, 161454, 154610]
+                data: graphData
             }],
 
             responsive: {
@@ -77,7 +108,7 @@
     }
 
     onMount(async () =>{
-        loadChart();
+        getData();
     });
 
 
@@ -91,4 +122,16 @@
     
         </p>
     </figure>    
+
+
+      
+    {#if resultStatus != ""}
+        <p>
+            Result:
+        </p>
+        <pre>
+{resultStatus}
+{result}
+        </pre>
+    {/if}
 </main>
