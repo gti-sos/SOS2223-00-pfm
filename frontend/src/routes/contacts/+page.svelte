@@ -1,3 +1,7 @@
+<svelte:head>
+    <title>Contact List</title>
+</svelte:head>
+
 <script>
     // @ts-nocheck
     
