@@ -43,6 +43,7 @@
     }
     
     async function loadChart(graphData){
+        var d = [[1,2,3],[2,3,4],[6,2,1]];
 
         Highcharts.chart('container', {
 
@@ -84,9 +85,16 @@
             },
 
             series: [{
-                name: 'Installation & Developers',
-                data: graphData
-            }],
+                name: 'A',
+                data: d.map((n)=>(n[0])),
+            },{
+                name: 'B',
+                data: d.map((n)=>(n[1])),
+            },{
+                name: 'C',
+                data: d.map((n)=>(n[2])),
+            }
+        ],
 
             responsive: {
                 rules: [{
