@@ -1,3 +1,2 @@
-# Codigo de L10
-- Frontend with Svelte II
- 
+# Codigo de L12
+- e2e testing

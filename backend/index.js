@@ -36,6 +36,25 @@ function loadBackend(app){
         
     });
 
+    app.get(BASE_API_URL+"/contacts/:name", (request,response) => {
+        var name = request.params.name;
+        console.log("New GET to /contacts/"+name);
+        db.find({name}, (err, contacts)=>{
+            if(err){
+                console.log(`Error geting /contacts/${name}: ${err}`);
+                response.sendStatus(500);
+            }else{
+                console.log(`Contacts returned ${contacts.length}`);
+                response.json(contacts.map((c)=>{
+                    delete c._id;
+                    return c;
+                })[0]);  
+            }
+        });
+        
+    });
+
+
     app.post(BASE_API_URL+"/contacts", (request,response) => {
         var newContact = request.body;
 
@@ -46,6 +65,32 @@ function loadBackend(app){
         db.insert(newContact);
 
         response.sendStatus(201);
+    });
+
+    
+    app.put(BASE_API_URL+"/contacts/:name", (request,response) => {
+        var name = request.params.name;
+        var updatedContact = request.body;
+
+        console.log(`updatedContact = ${JSON.stringify(updatedContact,null,2)}`);
+        
+        console.log("New UPDATE to /contacts/"+name);
+
+        db.update({ name }, updatedContact, {}, function (err, numReplaced) {
+            if(numReplaced == 1)
+                response.sendStatus(200);
+            else  if(numReplaced == 0)
+                response.sendStatus(404);
+            else 
+                response.sendStatus(500);
+            
+            if(err)
+                console.log("ERROR: "+err);
+            
+          });
+          
+
+        
     });
 
     app.delete(BASE_API_URL+"/contacts/:name", (request,response) => {
@@ -65,7 +110,23 @@ function loadBackend(app){
         });
     });
 
+    app.get(BASE_API_URL+"/data", (request,response) => {
+        
+        console.log(`New GET to /data`);
+        
+        function getRandomInt(min,max){
+            return Math.floor(Math.random() *(max-min)+min);
+        }
+        function v(){return getRandomInt(1,100)};
 
+        var data = new Array();
+
+        for(var i=0; i<10;i++)
+            data.push(v());
+
+        response.json(data);
+
+    });
 
 };
 

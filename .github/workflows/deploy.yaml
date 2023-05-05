@@ -6,31 +6,55 @@ on:
       - main
 jobs:
   deploy:
+    timeout-minutes: 20
     name: Deploy to Google Cloud Run
     runs-on: ubuntu-latest
     environment: production
     steps:
       - uses: actions/checkout@v2
       
-      - run: npm install
+      - uses: actions/setup-node@v3
+        with:<
+          node-version: 16
 
-      - run: cd frontend; npm install; cd ..
-      - run: cd frontend; npm run build; cd ..
+      - name: Install backend dependencies
+        run: npm ci
+
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps
+
+      - name: Install frontend dependences
+        run: cd frontend; npm install; cd ..
       
-      - run: npm start &
+      - name: Build frontend
+        run: cd frontend; npm run build; cd ..
+      
+      - name: Run app
+        run: npm start &
 
-      - run: npm test
+      - name: Run Backend tests
+        run: npm test
+      
+      - name: Run e2e tests
+        run: npx playwright test
 
-      - id: 'auth'
-        uses: 'google-github-actions/auth@v1'
+      - uses: actions/upload-artifact@v3
+        if: always()
         with:
-          credentials_json: '${{ secrets.GCP_SA_KEY_JSON }}'
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 30
 
-      - name: 'Set up Cloud SDK'
-        uses: 'google-github-actions/setup-gcloud@v1'
+      # - id: 'auth'
+      #   uses: 'google-github-actions/auth@v1'
+      #   with:
+      #     credentials_json: '${{ secrets.GCP_SA_KEY_JSON }}'
 
-      - name: 'Use gcloud CLI'
-        run: 'gcloud info'
+      # - name: 'Set up Cloud SDK'
+      #   uses: 'google-github-actions/setup-gcloud@v1'
+
+      # - name: 'Use gcloud CLI'
+      #   run: 'gcloud info'
     
-      - name: Deploy
-        run: gcloud app deploy
+      # - name: Deploy
+      #   run: gcloud app deploy
